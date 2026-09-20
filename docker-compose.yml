@@ -1,0 +1,49 @@
+
+services:
+  # 1. СЕРВИС БАЗЫ ДАННЫХ
+  postgres_db:
+    image: postgres:15-alpine
+    container_name: sniper_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432" # Пробрасываем порт наружу, чтобы Prisma видела базу
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    
+  # 2. СЕРВИС СНАЙПЕР-БОТА
+  ton_sniper_app:
+    build: .
+    container_name: ton_sniper_bot
+    restart: always
+    command: ["npm", "run", "start:docker"]
+    env_file:
+      - .env # Автоматически передаем переменные окружения
+    depends_on:
+      postgres_db:
+        condition: service_healthy  # Бот запустится только после готовности базы данных
+
+  # 3. СЕРВИС PRISMA STUDIO (Админка для просмотра БД)
+  prisma_studio:
+    build: .
+    container_name: prisma_studio_ui
+    
+    restart: always
+    ports:
+      - "5555:5555" # Откроем админку в браузере вашего ПК
+    env_file:
+      - .env
+    command: ["npx", "prisma", "studio", "--port", "5555", "--browser", "none"]
+    depends_on:
+      - postgres_db
+      
+volumes:
+  pgdata:

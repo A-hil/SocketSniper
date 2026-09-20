@@ -1,0 +1,42 @@
+// use prisma-next
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  username  String?
+  name      String?
+  posts     Post[]
+}
+
+model Post {
+  id        Int     @id @default(autoincrement())
+  title     String
+  content   String?
+  author    User     @relation(fields: [authorId], references: [id])     
+  authorId  Int
+}
+
+model GiftItem {
+  id         String   @id // ID подарка из сети TON
+  giftTypeId String   // Тип/название подарка
+  buyPrice   Float    // Цена покупки
+  buyTxHash  String   // Хэш транзакции покупки
+  lt  BigInt   // Логический таймстамп (lt) транзакции покупки
+}
+
+model AccountEvent {
+  id        String   @id
+  accountId String
+  lt        BigInt
+  txHash    String   @unique
+  method    String
+  createdAt DateTime @default(now())
+}
+

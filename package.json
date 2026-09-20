@@ -1,0 +1,35 @@
+{
+  "name": "socketsniper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "prisma skills sync || exit 0",
+    "contract:emit": "prisma contract emit",
+    "start": "npm run start:local",
+    "start:local": "tsx --env-file=local.env src/index.ts",
+    "start:docker": "tsx src/index.ts",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
+    "@types/pg": "^8.23.1",
+    "dotenv": "^17.4.2",
+    "pg": "^8.23.0",
+    "ws": "^8.21.3"
+  },
+  "devDependencies": {
+    "@prisma/cli-engine": "^0.2.3",
+    "@prisma/config": "^7.10.0",
+    "@types/node": "^26.5.0",
+    "@types/ws": "^8.18.1",
+    "prisma": "^7.10.0",
+    "tsx": "^4.23.13"
+  }
+}
